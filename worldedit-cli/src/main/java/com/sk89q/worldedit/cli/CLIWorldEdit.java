@@ -118,31 +118,51 @@ public class CLIWorldEdit {
     }
 
     public void setupRegistries() {
-        // Blocks
+
         for (Map.Entry<String, FileRegistries.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks.entrySet()) {
             if (BlockType.REGISTRY.get(manifestEntry.getKey()) == null) {
-                BlockType.REGISTRY.register(manifestEntry.getKey(), new BlockType(manifestEntry.getKey(), input -> {
-                    ParserContext context = new ParserContext();
-                    context.setPreferringWildcard(true);
-                    context.setTryLegacy(false);
-                    context.setRestricted(false);
-                    try {
-                        FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                                manifestEntry.getValue().defaultstate,
-                                context
-                        ).toImmutableState();
-                        BlockState defaultState = input.getBlockType().getAllStates().get(0);
-                        for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
-                            @SuppressWarnings("unchecked")
-                            Property<Object> prop = (Property<Object>) propertyObjectEntry.getKey();
-                            defaultState = defaultState.with(prop, propertyObjectEntry.getValue());
+                BlockType.REGISTRY.register(
+                        manifestEntry.getKey(), new BlockType(
+                                manifestEntry.getKey(), input -> {
+                            ParserContext context = new ParserContext();
+                            context.setPreferringWildcard(true);
+                            context.setTryLegacy(false);
+                            context.setRestricted(false);
+                            try {
+                                FuzzyBlockState state = (FuzzyBlockState) WorldEdit
+                                        .getInstance()
+                                        .getBlockFactory()
+                                        .parseFromInput(
+                                                manifestEntry.getValue().defaultstate,
+                                                context
+                                        )
+                                        .toImmutableState();
+                                BlockState defaultState = input.getBlockType().getAllStates().get(0);
+                                for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
+                                    @SuppressWarnings("unchecked")
+                                    Property<Object> prop = (Property<Object>) propertyObjectEntry.getKey();
+                                    defaultState = defaultState.with(prop, propertyObjectEntry.getValue());
+                                }
+                                return defaultState;
+                            } catch (InputParseException e) {
+                                LOGGER.warn("Error loading block state for " + manifestEntry.getKey(), e);
+                                return input;
+                            }
                         }
-                        return defaultState;
-                    } catch (InputParseException e) {
-                        LOGGER.warn("Error loading block state for " + manifestEntry.getKey(), e);
-                        return input;
-                    }
-                }));
+                        )
+                );
+            }
+        }
+        // Blocks
+        for (Material material : Material.values()) {
+            if (!material.isBlock()) {
+                continue;
+            }
+            if (material.isLegacy()) {
+                continue;
+            }
+            if (BlockType.REGISTRY.get(material.key().asString()) == null) {
+                BlockType.REGISTRY.register(material.key().asString(), new BlockType(material.key().asString(), input -> input));
             }
         }
         // Items
