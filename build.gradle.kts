@@ -68,6 +68,7 @@ allprojects {
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile::class) {
             options.compilerArgs.addAll(arrayOf("-Xmaxerrs", "1000"))
+            options.isWarnings =  false
         }
         tasks.withType(Test::class) {
             testLogging {
@@ -82,7 +83,7 @@ allprojects {
 }
 
 applyCommonConfiguration()
-val supportedVersions = listOf("1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.4", "1.21.5", "1.21.8")
+val supportedVersions = listOf("1.21.1")
 
 tasks {
     supportedVersions.forEach {
