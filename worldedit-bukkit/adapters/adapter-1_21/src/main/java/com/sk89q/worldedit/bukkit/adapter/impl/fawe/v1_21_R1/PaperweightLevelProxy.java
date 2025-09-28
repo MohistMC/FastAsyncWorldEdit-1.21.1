@@ -27,7 +27,7 @@ public class PaperweightLevelProxy extends ServerLevel {
 
     @SuppressWarnings("DataFlowIssue")
     private PaperweightLevelProxy() {
-        super(null, null, null, null, null, null, null, true, 0L, null, true, null, null, null, null);
+        super(null, null, null, null, null, null, null, true, 0L, null, true, null);
         throw new IllegalStateException("Cannot be instantiated");
     }
 

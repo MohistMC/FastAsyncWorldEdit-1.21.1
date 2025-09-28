@@ -119,7 +119,7 @@ public class PaperweightRegen extends Regenerator {
         LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(tempDir);
         ResourceKey<LevelStem> levelStemResourceKey = getWorldDimKey(environment);
         session = levelStorageSource.createAccess("faweregentempworld", levelStemResourceKey);
-        PrimaryLevelData originalWorldData = originalServerWorld.serverLevelData;
+        PrimaryLevelData originalWorldData = originalServerWorld.K;
 
         MinecraftServer server = originalServerWorld.getCraftServer().getServer();
         WorldOptions originalOpts = originalWorldData.worldGenOptions();
@@ -163,10 +163,7 @@ public class PaperweightRegen extends Regenerator {
                 seed,
                 ImmutableList.of(),
                 false,
-                originalServerWorld.getRandomSequences(),
-                environment,
-                generator,
-                biomeProvider
+                originalServerWorld.getRandomSequences()
         ) {
 
             private final Holder<Biome> singleBiome = options.hasBiomeType() ? DedicatedServer.getServer().registryAccess()
@@ -189,16 +186,6 @@ public class PaperweightRegen extends Regenerator {
                     final boolean savingDisabled
             ) {
                 // noop, spigot
-            }
-
-            @Override
-            public void save(
-                    @Nullable final ProgressListener progressListener,
-                    final boolean flush,
-                    final boolean savingDisabled,
-                    final boolean close
-            ) {
-                // noop, paper
             }
         }).get();
         freshWorld.noSave = true;

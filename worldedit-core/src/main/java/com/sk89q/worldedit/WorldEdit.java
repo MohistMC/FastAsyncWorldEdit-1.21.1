@@ -425,7 +425,7 @@ public final class WorldEdit {
     public void loadMappings() {
         BundledBlockData.getInstance(); // Load block registry
         BundledItemData.getInstance(); // Load item registry
-        LegacyMapper.getInstance(); // Load item registry
+        LegacyMapper.getInstance(); // Load item registry // Youere can't use this
     }
 
     /**

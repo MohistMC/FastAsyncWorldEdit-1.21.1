@@ -218,7 +218,12 @@ public interface IBukkitAdapter {
      * @return The itemtype
      */
     default ItemType asItemType(Material material) {
-        return ItemTypes.get(material.getKey().toString());
+        ItemType itemType = ItemType.REGISTRY.get(material.key().asString());
+        if (itemType == null) {
+            itemType = new ItemType(material.key().asString());
+            ItemType.REGISTRY.register(material.key().asString(), itemType);
+        }
+        return itemType;
     }
 
     /**

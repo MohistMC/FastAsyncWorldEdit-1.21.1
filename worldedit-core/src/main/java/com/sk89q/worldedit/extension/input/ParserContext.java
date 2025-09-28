@@ -52,7 +52,7 @@ public class ParserContext {
     @Nullable
     private Actor actor;
     private boolean restricted = true;
-    private boolean tryLegacy = true;
+    private boolean tryLegacy = false;
     private boolean preferringWildcard;
     //Fawe start
     private InjectedValueAccess injected;

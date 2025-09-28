@@ -20,6 +20,7 @@ addJarManifest(
 )
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to "*.jar")))
     // Modules
     api(projects.worldeditCore)
     compileOnly(projects.worldeditLibs.core.ap)

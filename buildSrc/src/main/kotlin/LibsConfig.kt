@@ -114,14 +114,8 @@ fun Project.applyLibrariesConfiguration() {
         archiveClassifier.set("sources")
     }
 
-    // This a dummy jar to comply with the requirements of the OSSRH,
-    // libs are not API and therefore no "proper" javadoc jar is necessary
-    tasks.register<Jar>("javadocJar") {
-        archiveClassifier.set("javadoc")
-    }
-
     tasks.named("assemble").configure {
-        dependsOn("jar", "sourcesJar", "javadocJar")
+        dependsOn("jar", "sourcesJar")
     }
 
     project.apply<LibsConfigPluginHack>()
@@ -172,20 +166,6 @@ fun Project.applyLibrariesConfiguration() {
         outgoing.artifact(tasks.named("sourcesJar"))
     }
 
-    val javadocElements = project.configurations.register("javadocElements") {
-        isVisible = false
-        description = "Javadoc elements for libs"
-        isCanBeResolved = false
-        isCanBeConsumed = true
-        attributes {
-            attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_RUNTIME))
-            attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.DOCUMENTATION))
-            attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.SHADOWED))
-            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, project.objects.named(DocsType.JAVADOC))
-        }
-        outgoing.artifact(tasks.named("javadocJar"))
-    }
-
     libsComponent.addVariantsFromConfiguration(apiElements.get()) {
         mapToMavenScope("compile")
     }
@@ -195,10 +175,6 @@ fun Project.applyLibrariesConfiguration() {
     }
 
     libsComponent.addVariantsFromConfiguration(sourcesElements.get()) {
-        mapToMavenScope("runtime")
-    }
-
-    libsComponent.addVariantsFromConfiguration(javadocElements.get()) {
         mapToMavenScope("runtime")
     }
 

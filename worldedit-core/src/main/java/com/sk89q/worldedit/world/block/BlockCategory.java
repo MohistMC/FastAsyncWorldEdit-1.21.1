@@ -51,10 +51,16 @@ public class BlockCategory extends Category<BlockType> implements Keyed {
         //FAWE start
         int max = -1;
         for (BlockType type : result) {
+            if (type == null) {
+                continue;
+            }
             max = Math.max(max, type.getInternalId());
         }
         this.flatMap = new boolean[max + 1];
         for (BlockType type : result) {
+            if (type == null) {
+                continue;
+            }
             this.flatMap[type.getInternalId()] = true;
         }
         return result;

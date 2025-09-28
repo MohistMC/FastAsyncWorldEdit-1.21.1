@@ -67,6 +67,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.bukkit.Material;
+
 /**
  * The CLI implementation of WorldEdit.
  */
@@ -144,9 +146,15 @@ public class CLIWorldEdit {
             }
         }
         // Items
-        for (String name : fileRegistries.getDataFile().items) {
-            if (ItemType.REGISTRY.get(name) == null) {
-                ItemType.REGISTRY.register(name, new ItemType(name));
+        for (Material name : Material.values()) {
+            if (!name.isItem()) {
+                continue;
+            }
+            if (name.isLegacy()) {
+                continue;
+            }
+            if (ItemType.REGISTRY.get(name.key().asString()) == null) {
+                ItemType.REGISTRY.register(name.key().asString(), new ItemType(name.key().asString()));
             }
         }
         // Entities

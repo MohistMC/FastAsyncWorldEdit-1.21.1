@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.PushReaction;
+import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
 public class PaperweightBlockMaterial extends BukkitBlockMaterial<Block, BlockState> {
@@ -27,6 +28,9 @@ public class PaperweightBlockMaterial extends BukkitBlockMaterial<Block, BlockSt
 
     @Override
     protected FaweCompoundTag tileForBlock(final Block block) {
+        if (!block.asItem().getDefaultInstance().getBukkitStack().getType().getKey().namespace().equals(NamespacedKey.MINECRAFT)) {
+            return null;
+        }
         BlockEntity tileEntity = !(block instanceof EntityBlock eb) ? null : eb.newBlockEntity(BlockPos.ZERO, this.blockState);
         return tileEntity == null ? null : PaperweightGetBlocks.NMS_TO_TILE.apply(tileEntity);
     }

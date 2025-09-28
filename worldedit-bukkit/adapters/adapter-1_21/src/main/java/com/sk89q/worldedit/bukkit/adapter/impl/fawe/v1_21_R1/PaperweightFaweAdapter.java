@@ -632,11 +632,7 @@ public final class PaperweightFaweAdapter extends FaweAdapter<net.minecraft.nbt.
 
     @Override
     public RelighterFactory getRelighterFactory() {
-        if (PaperLib.isPaper()) {
-            return new PaperweightStarlightRelighterFactory();
-        } else {
-            return new NMSRelighterFactory();
-        }
+        return new NMSRelighterFactory();
     }
 
     @Override

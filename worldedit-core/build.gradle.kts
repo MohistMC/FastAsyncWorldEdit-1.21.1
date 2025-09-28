@@ -69,6 +69,7 @@ tasks.named<Test>("test") {
 tasks.withType<JavaCompile>().configureEach {
     dependsOn(":worldedit-libs:build")
     options.compilerArgs.add("-Aarg.name.key.prefix=")
+    options.isWarnings = false
 }
 
 tasks.named<AntlrTask>("generateGrammarSource").configure {

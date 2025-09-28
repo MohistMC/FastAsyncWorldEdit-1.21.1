@@ -20,8 +20,4 @@ fun Project.applyPaperweightAdapterConfiguration() {
     tasks.named("assemble") {
         dependsOn("reobfJar")
     }
-
-    tasks.named("javadoc") {
-        enabled = false
-    }
 }

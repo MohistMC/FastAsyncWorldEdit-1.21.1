@@ -68,7 +68,7 @@ allprojects {
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile::class) {
             options.compilerArgs.addAll(arrayOf("-Xmaxerrs", "1000"))
-            options.isWarnings =  false
+            options.isWarnings = false
         }
         tasks.withType(Test::class) {
             testLogging {

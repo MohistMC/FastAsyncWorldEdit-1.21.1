@@ -7,6 +7,10 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.block.BlockTypesCache;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.data.BlockData;
@@ -17,26 +21,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class CachedBukkitAdapter implements IBukkitAdapter {
 
-    private int[] itemTypes;
-    private int[] blockTypes;
+    private Map<Material, Integer> itemTypesMap;
+    private Map<Material, Integer> blockTypesMap;
 
     private boolean init() {
-        if (itemTypes == null) {
+        if (itemTypesMap == null) {
+            itemTypesMap = new HashMap<>();
+            blockTypesMap = new HashMap<>();
             Material[] materials = Material.values();
-            itemTypes = new int[materials.length];
-            blockTypes = new int[materials.length];
-            for (int i = 0; i < materials.length; i++) {
-                Material material = materials[i];
+            for (Material material : materials) {
                 if (material.isLegacy()) {
                     continue;
                 }
                 NamespacedKey key = material.getKey();
                 String id = key.getNamespace() + ":" + key.getKey();
                 if (material.isBlock()) {
-                    blockTypes[i] = BlockTypes.get(id).getInternalId();
+                    blockTypesMap.put(material, BlockTypes.get(id).getInternalId());
                 }
                 if (material.isItem()) {
-                    itemTypes[i] = ItemTypes.get(id).getInternalId();
+                    itemTypesMap.put(material, ItemTypes.get(id).getInternalId());
                 }
             }
             return true;
@@ -52,20 +55,32 @@ public abstract class CachedBukkitAdapter implements IBukkitAdapter {
      */
     @Override
     public ItemType asItemType(Material material) {
+        ItemType itemType;
         try {
-            return ItemTypes.get(itemTypes[material.ordinal()]);
+            Integer id = itemTypesMap.get(material);
+            itemType = id != null ? ItemTypes.get(id) : null;
         } catch (NullPointerException e) {
             if (init()) {
                 return asItemType(material);
             }
-            return ItemTypes.get(itemTypes[material.ordinal()]);
+            itemType = ItemTypes.get(itemTypesMap.get(material));
         }
+        if (itemType == null) {
+            if (ItemType.REGISTRY.get(material.key().asString()) == null) {
+                itemType = new ItemType(material.key().asString());
+                ItemType.REGISTRY.register(material.key().asString(), itemType);
+            } else {
+                itemType = ItemType.REGISTRY.get(material.key().asString());
+            }
+        }
+        return itemType;
     }
 
     @Override
     public BlockType asBlockType(Material material) {
         try {
-            return BlockTypesCache.values[blockTypes[material.ordinal()]];
+            Integer id = blockTypesMap.get(material);
+            return id != null ? BlockTypesCache.values[id] : null;
         } catch (NullPointerException e) {
             if (init()) {
                 return asBlockType(material);
@@ -85,9 +100,13 @@ public abstract class CachedBukkitAdapter implements IBukkitAdapter {
         try {
             checkNotNull(blockData);
             Material material = blockData.getMaterial();
-            BlockType type = BlockTypes.getFromStateId(blockTypes[material.ordinal()]);
+            Integer internalId = blockTypesMap.get(material);
+            if (internalId == null) {
+                return null;
+            }
+            BlockType type = BlockTypes.getFromStateId(internalId);
             List<? extends Property> propList = type.getProperties();
-            if (propList.size() == 0) {
+            if (propList.isEmpty()) {
                 return type.getDefaultState();
             }
             String properties = blockData.getAsString();

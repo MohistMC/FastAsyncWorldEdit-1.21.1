@@ -355,8 +355,7 @@ public final class PaperweightPlatformAdapter extends NMSAdapter {
                             levelChunk,
                             nmsWorld.getChunkSource().getLightEngine(),
                             null,
-                            null,
-                            false // last false is to not bother with x-ray
+                            null
                     );
                 } else {
                     // deprecated on paper - deprecation suppressed
@@ -651,18 +650,6 @@ public final class PaperweightPlatformAdapter extends NMSAdapter {
     }
 
     static List<Entity> getEntities(LevelChunk chunk) {
-        if (PaperLib.isPaper()) {
-            return Optional.ofNullable(chunk.level
-                    .moonrise$getEntityLookup()
-                    .getChunk(chunk.locX, chunk.locZ)).map(c -> {
-                try {
-                    //noinspection unchecked
-                    return (List<Entity>) PAPER_CHUNK_GEN_ALL_ENTITIES.invoke(c);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException("Failed to lookup entities [PAPER=true]", e);
-                }
-            }).orElse(Collections.emptyList());
-        }
         try {
             //noinspection unchecked
             return ((PersistentEntitySectionManager<Entity>) (SERVER_LEVEL_ENTITY_MANAGER.get(chunk.level))).getEntities(chunk.getPos());

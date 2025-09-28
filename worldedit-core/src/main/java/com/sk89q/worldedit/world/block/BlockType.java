@@ -64,7 +64,7 @@ public class BlockType implements Keyed, Pattern {
     private final LazyReference<FuzzyBlockState> emptyFuzzy
             = LazyReference.from(() -> new FuzzyBlockState(this));
     //FAWE start
-    private final BlockTypesCache.Settings settings;
+    private BlockTypesCache.Settings settings;
     @Deprecated
     private final LazyReference<String> name = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
             .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getName(this));
@@ -273,6 +273,9 @@ public class BlockType implements Keyed, Pattern {
      * @return The default state
      */
     public BlockState getDefaultState() {
+        if (settings == null ) {
+            this.settings = new BlockTypesCache.Settings(this, id, 0, null);
+        }
         //FAWE start - use settings
         return this.settings.defaultState;
         //FAWE end

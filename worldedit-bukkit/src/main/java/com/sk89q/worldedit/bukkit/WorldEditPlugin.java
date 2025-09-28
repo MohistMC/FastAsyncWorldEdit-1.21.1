@@ -135,50 +135,6 @@ public class WorldEditPlugin extends JavaPlugin {
             }
         }
         //FAWE end
-        //FAWE start
-        final Attributes attributes = WorldEditManifest.readAttributes();
-        Objects.requireNonNull(attributes, "Could not retrieve manifest attributes");
-        final String type = attributes.getValue("FAWE-Plugin-Jar-Type");
-        Objects.requireNonNull(type, "Could not determine plugin jar type");
-        if (PaperLib.isPaper()) {
-            if (PaperLib.getMinecraftVersion() < 20 || (PaperLib.getMinecraftVersion() == 20 && PaperLib.getMinecraftPatchVersion() < 5)) {
-                if (type.equals("mojang") && !Refraction.isMojangMapped()) {
-                    throw new IllegalStateException(
-                        """
-                        
-                        **********************************************
-                        ** You are using the wrong FAWE jar for your Minecraft version.
-                        ** Download the correct FAWE jar from Modrinth: https://modrinth.com/plugin/fastasyncworldedit/
-                        **********************************************"""
-                    );
-                }
-            } else if (PaperLib.getMinecraftVersion() > 20 || (PaperLib.getMinecraftVersion() == 20 && PaperLib.getMinecraftPatchVersion() >= 5)) {
-                if (type.equals("spigot")) {
-                    LOGGER.warn(
-                        """
-                        
-                        **********************************************
-                        ** You are using the Spigot-mapped FAWE jar on a modern Paper version.
-                        ** This will result in slower first-run times and wasted disk space from plugin remapping.
-                        ** Download the Paper FAWE jar from Modrinth to avoid this: https://modrinth.com/plugin/fastasyncworldedit/
-                        **********************************************"""
-                    );
-                }
-            }
-        } else {
-            if (type.equals("mojang")) {
-                throw new IllegalStateException(
-                    """
-                    
-                    **********************************************
-                    ** You are attempting to run the Paper FAWE jar on a Spigot server.
-                    ** Either switch to Paper (https://papermc.io), or download the correct FAWE jar for your platform
-                    ** from Modrinth: https://modrinth.com/plugin/fastasyncworldedit/
-                    **********************************************"""
-                );
-            }
-        }
-        //FAWE end
 
         INSTANCE = this;
 
@@ -286,7 +242,7 @@ public class WorldEditPlugin extends JavaPlugin {
         // Check if we are in a safe environment
         ServerLib.checkUnsafeForks();
         // Check if a new build is available
-        UpdateNotification.doUpdateCheck();
+        // UpdateNotification.doUpdateCheck();
     }
 
     private void setupPreWorldData() {

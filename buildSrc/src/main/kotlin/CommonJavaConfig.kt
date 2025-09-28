@@ -29,6 +29,7 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, banSlf4j: Boolean 
                 options.encoding = "UTF-8"
                 options.compilerArgs.add("-parameters")
                 options.compilerArgs.add("--add-modules=jdk.incubator.vector")
+                options.isWarnings = false
             }
 
     configurations.all {
@@ -51,32 +52,8 @@ fun Project.applyCommonJavaConfiguration(sourcesJar: Boolean, banSlf4j: Boolean 
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.11.1")
     }
 
-    // Java 8 turns on doclint which we fail
-    tasks.withType<Javadoc>().configureEach {
-        (options as StandardJavadocDocletOptions).apply {
-            addStringOption("Xdoclint:none", "-quiet")
-            addStringOption("-add-modules", "jdk.incubator.vector")
-            tags(
-                    "apiNote:a:API Note:",
-                    "implSpec:a:Implementation Requirements:",
-                    "implNote:a:Implementation Note:"
-            )
-            options.encoding = "UTF-8"
-
-            links(
-                    "https://jd.advntr.dev/api/latest/",
-                    "https://logging.apache.org/log4j/2.x/javadoc/log4j-api/",
-                    "https://www.antlr.org/api/Java/",
-                    "https://jd.papermc.io/paper/1.21.8/",
-                    "https://intellectualsites.github.io/fastasyncworldedit-javadocs/worldedit-core/"
-            )
-            docTitle = "${rootProject.name}-${project.description}" +  " " + "${rootProject.version}"
-        }
-    }
-
     configure<JavaPluginExtension> {
         disableAutoTargetJvm()
-        withJavadocJar()
         if (sourcesJar) {
             withSourcesJar()
         }

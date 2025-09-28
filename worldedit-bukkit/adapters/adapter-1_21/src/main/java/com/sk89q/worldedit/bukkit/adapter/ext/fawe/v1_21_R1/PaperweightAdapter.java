@@ -758,6 +758,9 @@ public final class PaperweightAdapter implements BukkitImplAdapter<net.minecraft
 
             PrimaryLevelData newWorldData = new PrimaryLevelData(newWorldSettings, newOpts, specialWorldProperty, Lifecycle.stable());
 
+            net.minecraft.world.level.Level.craftWorldData( env,
+                    gen,
+                    bukkitWorld.getBiomeProvider());
             ServerLevel freshWorld = new ServerLevel(
                 originalWorld.getServer(),
                 originalWorld.getServer().executor,
@@ -772,10 +775,7 @@ public final class PaperweightAdapter implements BukkitImplAdapter<net.minecraft
                 seed,
                 ImmutableList.of(),
                 false,
-                originalWorld.getRandomSequences(),
-                env,
-                gen,
-                bukkitWorld.getBiomeProvider()
+                originalWorld.getRandomSequences()
             );
             try {
                 regenForWorld(region, extent, freshWorld, options);

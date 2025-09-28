@@ -37,7 +37,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     configure<JavaPluginExtension> {
         disableAutoTargetJvm()
-        withJavadocJar()
     }
 
     if (name in setOf("worldedit-core", "worldedit-bukkit", "worldedit-cli")) {

@@ -84,7 +84,7 @@ public class PaperweightWorldNativeAccess implements WorldNativeAccess<LevelChun
     @Nullable
     @Override
     public net.minecraft.world.level.block.state.BlockState setBlockState(LevelChunk chunk, BlockPos position, net.minecraft.world.level.block.state.BlockState state) {
-        return chunk.setBlockState(position, state, false, this.sideEffectSet.shouldApply(SideEffect.UPDATE));
+        return chunk.setBlockStateCB(position, state, false, this.sideEffectSet.shouldApply(SideEffect.UPDATE));
     }
 
     @Override
