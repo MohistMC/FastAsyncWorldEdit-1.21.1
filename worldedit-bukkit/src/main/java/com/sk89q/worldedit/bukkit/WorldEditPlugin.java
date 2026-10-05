@@ -58,7 +58,6 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-import io.papermc.lib.PaperLib;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -211,9 +210,7 @@ public class WorldEditPlugin extends JavaPlugin {
         // Now we can register events
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
         // register async tab complete, if available
-        if (PaperLib.isPaper()) {
-            getServer().getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
-        }
+        registerAsyncTabCompleteListener();
 
         initializeRegistries(); // this creates the objects matching Bukkit's enums - but doesn't fill them with data yet
         if (Bukkit.getWorlds().isEmpty()) {
@@ -243,6 +240,17 @@ public class WorldEditPlugin extends JavaPlugin {
         ServerLib.checkUnsafeForks();
         // Check if a new build is available
         // UpdateNotification.doUpdateCheck();
+    }
+
+    private void registerAsyncTabCompleteListener() {
+        // Hybrid servers can provide the event while their PaperLib compatibility patch reports non-Paper.
+        try {
+            Class.forName("com.destroystokyo.paper.event.server.AsyncTabCompleteEvent", false, getClass().getClassLoader());
+        } catch (ClassNotFoundException e) {
+            return;
+        }
+        getServer().getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
+        LOGGER.info("Async command completion listener registered.");
     }
 
     private void setupPreWorldData() {
@@ -689,6 +697,13 @@ public class WorldEditPlugin extends JavaPlugin {
             Plugin owner = platform.getDynamicCommands().getCommandOwner(label);
             if (owner != WorldEditPlugin.this) {
                 return;
+            }
+
+            // Check ownership before removing our namespace, and normalize the suggestion input as well.
+            String namespace = WorldEditPlugin.this.getName().toLowerCase(Locale.ROOT) + ":";
+            if (label.startsWith(namespace)) {
+                label = label.substring(namespace.length());
+                buffer = "/" + label + buffer.substring(firstSpace);
             }
 
             final Optional<org.enginehub.piston.Command> command
